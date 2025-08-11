@@ -159,7 +159,7 @@ def process_molecule_folder(root_folder, model_name):
     molecule_embeddings_list = []
 
     
-    with open('/data/MMM.u2/mcwon/SafeDrug/data/output/voc_final.pkl', 'rb') as f:
+    with open('/data/MMM.u2/mcwon/data/output/voc_final.pkl', 'rb') as f:
         voc_data = dill.load(f)
 
     med_voc = voc_data['med_voc']
@@ -252,5 +252,5 @@ if __name__ == "__main__":
 
     embeddings_list = process_molecule_folder(root_folder, model_name)    
 
-    with open(f"/data/MMM.u2/mcwon/SafeDrug/data/output/elf_embedding_mobilenet.pkl", "wb") as f:
+    with open(f"/data/MMM.u2/mcwon/data/output/elf_embedding_mobilenet.pkl", "wb") as f:
         pickle.dump(embeddings_list, f)

@@ -86,7 +86,7 @@ def eval(model, data_eval, voc_size, epoch, med_voc, ddi_adj):
     model.eval()
     y_true_atc3_all, y_scores_atc3_all = [], []
     y_true_cid_all,  y_scores_cid_all  = [], []
-    with open("/data/MMM.u2/mcwon/SafeDrug/data/output/cid_to_atc3.pkl", "rb") as f:
+    with open("/data/MMM.u2/mcwon/data/output/cid_to_atc3.pkl", "rb") as f:
         cid_to_atc3 = pickle.load(f)        
     cid_vocab = med_voc.idx2word 
 
@@ -129,7 +129,7 @@ def eval(model, data_eval, voc_size, epoch, med_voc, ddi_adj):
                 loss_multi = F.multilabel_margin_loss(target_output_sigmoid, loss_multi_target)
                 
             
-                current_ddi_rate = ddi_rate_score([[y_pred_label_tmp]], path="/data/MMM.u2/mcwon/SafeDrug/data/output/ddi_A_final.pkl")
+                current_ddi_rate = ddi_rate_score([[y_pred_label_tmp]], path="/data/MMM.u2/mcwon/data/output/ddi_A_final.pkl")
                 
                 if current_ddi_rate <= args.target_ddi:
                     loss = 0.95 * loss_bce + 0.05 * loss_multi
@@ -170,7 +170,7 @@ def eval(model, data_eval, voc_size, epoch, med_voc, ddi_adj):
             auroc.append((adm_auroc_CID, adm_auroc_ATC3))
             llprint(f"evaluation step: {step + 1} / {len(data_eval)}")
 
-    ddi_rate = ddi_rate_score(smm_record, path="/data/MMM.u2/mcwon/SafeDrug/data/output/ddi_A_final.pkl")
+    ddi_rate = ddi_rate_score(smm_record, path="/data/MMM.u2/mcwon/data/output/ddi_A_final.pkl")
     val_loss_avg = val_loss_sum / count
     
 
@@ -203,12 +203,12 @@ def eval(model, data_eval, voc_size, epoch, med_voc, ddi_adj):
 def main(args):
 
     # load data
-    data_path = "/data/MMM.u2/mcwon/SafeDrug/data/output/records_final.pkl"
-    voc_path = "/data/MMM.u2/mcwon/SafeDrug/data/output/voc_final.pkl"
+    data_path = "/data/MMM.u2/mcwon/data/output/records_final.pkl"
+    voc_path = "/data/MMM.u2/mcwon/data/output/voc_final.pkl"
 
-    ddi_adj_path = "/data/MMM.u2/mcwon/SafeDrug/data/output/ddi_A_final.pkl"
-    ddi_mask_path = "/data/MMM.u2/mcwon/SafeDrug/data/output/ddi_mask_H.pkl"
-    molecule_path = "/data/MMM.u2/mcwon/SafeDrug/data/output/cidtoSMILES.pkl"
+    ddi_adj_path = "/data/MMM.u2/mcwon/data/output/ddi_A_final.pkl"
+    ddi_mask_path = "/data/MMM.u2/mcwon/data/output/ddi_mask_H.pkl"
+    molecule_path = "/data/MMM.u2/mcwon/data/output/cidtoSMILES.pkl"
     
     if torch.cuda.is_available():
         try:

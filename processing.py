@@ -70,7 +70,7 @@ def MakeDictionaryCIDtoATC3(med_pd):
     filtered_df = med_pd.dropna(subset=["CID", "ATC3"]).drop_duplicates(subset=["CID"])
     cid_to_atc3 = dict(zip(filtered_df["CID"], filtered_df["ATC3"]))
 
-    with open("/data/MMM.u2/mcwon/SafeDrug/data/output/cid_to_atc3.pkl", "wb") as f:
+    with open("/data/MMM.u2/mcwon/data/output/cid_to_atc3.pkl", "wb") as f:
         pickle.dump(cid_to_atc3, f)
         
     return cid_to_atc3
@@ -375,26 +375,8 @@ def get_ddi_matrix(med_voc, ddi_table_csv):
     return ddi_adj, ddi_severity_adj
 
 
-def make_cid2smiles_csv(vocabulary_file, med_pd, output_csv_path):
-    
-    with open(vocabulary_file, "rb") as f:
-        vocabs = dill.load(f)
-
-    med_voc = vocabs["med_voc"]
-
-    if hasattr(med_voc, "idx2word"):
-        unique_cids = set(med_voc.idx2word.values())
-
-
-    cid_smiles_df = med_pd[["CID", "SMILES"]].drop_duplicates()
-    cid_smiles_df = cid_smiles_df[cid_smiles_df["CID"].isin(unique_cids)]
-    cid_smiles_df = cid_smiles_df.dropna()
-    cid_smiles_df.to_csv(output_csv_path, index=False)
-
-
-
 def compute_medication_imbalance(records, med_voc,
-                                 failed_cids_path="/data/MMM.u2/mcwon/SafeDrug/data/input/failed_cids_real.csv"):
+                                 failed_cids_path="/data/MMM.u2/mcwon/data/input/failed_cids_real.csv"):
     total_counts = np.zeros(len(med_voc.idx2word))
     total_visits = 0
 
@@ -446,7 +428,7 @@ def compute_medication_imbalance(records, med_voc,
     return df_sorted
 
 def filter_300_most_med_statistics(med_pd):
-    cid_usage_csv="/data/MMM.u2/mcwon/SafeDrug/data/input/top300_cid_usage.csv"
+    cid_usage_csv="/data/MMM.u2/mcwon/data/input/top300_cid_usage.csv"
     top300_df = pd.read_csv(cid_usage_csv, dtype={"CID": str})
 
     top300_cids = top300_df["CID"].tolist()
@@ -458,21 +440,21 @@ def filter_300_most_med_statistics(med_pd):
 if __name__ == "__main__":
 
     # input files
-    med_file = "/data/MMM.u2/mcwon/SafeDrug/SafeDrug Data/predata/PRESCRIPTIONS.csv"
-    diag_file = "/data/MMM.u2/mcwon/SafeDrug/SafeDrug Data/DIAGNOSES_ICD.csv"
-    procedure_file = "/data/MMM.u2/mcwon/SafeDrug/SafeDrug Data/PROCEDURES_ICD.csv"
-    ndc2RXCUI_file = "/data/MMM.u2/mcwon/SafeDrug/data/input/ndc2RXCUI.txt"
-    ddi_file = "/data/MMM.u2/mcwon/SafeDrug/data/input/drug-DDI.csv"
-    NDC_RXCUI_CID_SMILES_file = "/data/MMM.u2/mcwon/SafeDrug/data/input/ndc2rxcui2inn2cid2smiles.csv"
-    RXCUI2atc3_file = "/data/MMM.u2/mcwon/SafeDrug/data/input/RXCUI2atc3.csv"
+    med_file = "/data/MMM.u2/mcwon/data/input/PRESCRIPTIONS.csv"
+    diag_file = "/data/MMM.u2/mcwon/data/input/DIAGNOSES_ICD.csv"
+    procedure_file = "/data/MMM.u2/mcwon/input/PROCEDURES_ICD.csv"
+    ndc2RXCUI_file = "/data/MMM.u2/mcwon/data/input/ndc2RXCUI.txt"
+    ddi_file = "/data/MMM.u2/mcwon/data/input/drug-DDI.csv"
+    NDC_RXCUI_CID_SMILES_file = "/data/MMM.u2/mcwon/data/input/ndc2rxcui2inn2cid2smiles.csv"
+    RXCUI2atc3_file = "/data/MMM.u2/mcwon/data/input/RXCUI2atc3.csv"
     # output files
-    ddi_adjacency_file = "/data/MMM.u2/mcwon/SafeDrug/data/output/ddi_A_final.pkl"
-    ehr_adjacency_file = "/data/MMM.u2/mcwon/SafeDrug/data/output/ehr_adj_final.pkl"
-    ehr_sequence_file = "/data/MMM.u2/mcwon/SafeDrug/data/output/records_final.pkl"
-    vocabulary_file = "/data/MMM.u2/mcwon/SafeDrug/data/output/voc_final.pkl"
-    ddi_mask_H_file = "/data/MMM.u2/mcwon/SafeDrug/data/output/ddi_mask_H.pkl"
-    ddi_table_csv = "/data/MMM.u2/mcwon/SafeDrug/data/output/ddi_detailed_table.csv"
-    cid2smiles_file = "/data/MMM.u2/mcwon/SafeDrug/data/output/cidtoSMILES.pkl"
+    ddi_adjacency_file = "/data/MMM.u2/mcwon/data/output/ddi_A_final.pkl"
+    ehr_adjacency_file = "/data/MMM.u2/mcwon/data/output/ehr_adj_final.pkl"
+    ehr_sequence_file = "/data/MMM.u2/mcwon/data/output/records_final.pkl"
+    vocabulary_file = "/data/MMM.u2/mcwon/data/output/voc_final.pkl"
+    ddi_mask_H_file = "/data/MMM.u2/mcwon/data/output/ddi_mask_H.pkl"
+    ddi_table_csv = "/data/MMM.u2/mcwon/data/output/ddi_detailed_table.csv"
+    cid2smiles_file = "/data/MMM.u2/mcwon/data/output/cidtoSMILES.pkl"
 
     med_pd = med_process(med_file)
     med_pd_lg2 = process_visit_lg2(med_pd).reset_index(drop=True)
@@ -511,7 +493,7 @@ if __name__ == "__main__":
         "CID000004935"
         }
 
-    failed_cids_file = "/data/MMM.u2/mcwon/SafeDrug/data/input/failed_cids_final.csv"
+    failed_cids_file = "/data/MMM.u2/mcwon/data/input/failed_cids_final.csv"
     failed_cids_df = pd.read_csv(failed_cids_file)
     failed_cids = set(failed_cids_df["CID"].astype(str).str.strip())
 
@@ -534,7 +516,7 @@ if __name__ == "__main__":
     pro_pd = procedure_process(procedure_file)
     print("complete procedure processing")
     
-    adm_pd = pd.read_csv("/data/MMM.u2/mcwon/SafeDrug/data/input/ADMISSIONS.csv")
+    adm_pd = pd.read_csv("/data/MMM.u2/mcwon/data/input/ADMISSIONS.csv")
     data = combine_process(med_pd, diag_pd, pro_pd, adm_pd)
     
     lg2_subject_ids = process_visit_lg2(data)[["SUBJECT_ID"]]
@@ -549,14 +531,8 @@ if __name__ == "__main__":
     records = create_patient_record(data, diag_voc, med_voc, pro_voc)
     print("obtain ehr sequence data")
 
-    make_cid2smiles_csv(
-        vocabulary_file=vocabulary_file,
-        med_pd=med_pd,
-        output_csv_path="/data/MMM.u2/mcwon/SafeDrug/ELF_data/med_info(ELF).csv"
-    )
-
     pos_ratio_all = compute_medication_imbalance(records, med_voc,
-                                failed_cids_path="/data/MMM.u2/mcwon/SafeDrug/data/input/failed_cids_final.csv")
+                                failed_cids_path="/data/MMM.u2/mcwon/data/input/failed_cids_final.csv")
     ddi_mask_H = get_ddi_mask(cid_to_smiles, med_voc)
     dill.dump(ddi_mask_H, open(ddi_mask_H_file, "wb"))
 

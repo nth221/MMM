@@ -43,18 +43,13 @@ pip install rdkit-pypi
 
 - Install numpy, pandas, and scipy with specific versions to avoid conflicts:
 ```
-pip install numpy==1.22.4
-```
-```
-pip install pandas==1.3.0
-```
-```
-pip install numpy==1.13.1
+pip install numpy==1.22.4 pandas==1.3.0 scipy==1.13.1
 ```
 
-- Install PyTorch (torch) and torchvision using pip:
+- To install PyTorch 2.3.0 with CUDA 11.8 support and torchvision 0.18.0 matching CUDA version, run::
 ```
-pip install torch torchvision
+pip install torch==2.3.0+cu118 torchvision==0.18.0+cu118 torchaudio --extra-index-url https://download.pytorch.org/whl/cu118
+
 ```
 
 ### Dataset and Hyperparameter Configuration

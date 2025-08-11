@@ -44,7 +44,7 @@ class MaskLinear(nn.Module):
         )
 
 # MMM model: ELF + Bipartite model
-ELF_embedding_path='/projects/MMM2/mcwon/PRIME_MMM/elf_efficientnet_v2_l_REAL.pkl'
+ELF_embedding_path='/projects/MMM/mcwon/PRIME_MMM/elf_efficientnet_v2_l_REAL.pkl'
 with open(ELF_embedding_path, 'rb') as f:
     loaded_data = pickle.load(f)
 
