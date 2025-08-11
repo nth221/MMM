@@ -5,7 +5,7 @@
 ## This repository contains the official implementation of **"MMM: Quantum-Chemical Molecular Representation Learning for Combinatorial Drug Recommendation"**.
 
 
-# Paper Overview
+## Paper Overview
 
 **MMM** is a multimodal framework that combines **molecular ELF images** with **patient EHR sequences** to recommend **combinatorial drug sets** while explicitly accounting for **drug–drug interactions (DDIs)**.  
 Our key ideas are: (1) **ELF-based visual embeddings** that capture quantum-chemical cues of molecular structure, (2) **EHR encoders** that track patient state over time, and (3) a **DDI-aware module** (loss/constraints/attention) to encourage safe recommendations.
