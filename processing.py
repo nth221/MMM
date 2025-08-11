@@ -9,14 +9,10 @@ import os
 import pickle
 from tqdm import tqdm
 
-
-#random seed
 import random
 random.seed(2048)
 np.random.seed(2048)
 
-##### process medications #####
-# load med data
 def med_process(med_file):
     med_pd = pd.read_csv(med_file, dtype={"NDC": "category"})
     
@@ -48,7 +44,6 @@ def med_process(med_file):
     return med_pd
 
 
-# NDC - CID - SMILES mapping
 def NDCtoCID_Mapping(med_pd, ndc2cid_csv_path):
     ndc2cid_df = pd.read_csv(ndc2cid_csv_path, dtype=str)
     merged_df = med_pd.merge(ndc2cid_df, on="NDC", how="left")
@@ -62,30 +57,6 @@ def NDCtoCID_Mapping(med_pd, ndc2cid_csv_path):
     return merged_df
 
 
-# RXCUI -> ATC3 mapping
-def codeMapping2atc4(med_pd):
-    with open(ndc2RXCUI_file, "r") as f:
-        ndc2RXCUI = eval(f.read())
-    med_pd["RXCUI"] = med_pd["NDC"].map(ndc2RXCUI)
-    med_pd.dropna(inplace=True)
-
-    RXCUI2atc4 = pd.read_csv(RXCUI2atc4_file)
-    RXCUI2atc4 = RXCUI2atc4.drop(columns=["YEAR", "MONTH", "NDC"])
-    RXCUI2atc4.drop_duplicates(subset=["RXCUI"], inplace=True)
-    med_pd.drop(index=med_pd[med_pd["RXCUI"].isin([""])].index, axis=0, inplace=True)
-
-    med_pd["RXCUI"] = med_pd["RXCUI"].astype("int64")
-    med_pd = med_pd.reset_index(drop=True)
-    med_pd = med_pd.merge(RXCUI2atc4, on=["RXCUI"])
-    med_pd.drop(columns=["NDC", "RXCUI"], inplace=True)
-    med_pd["ATC3"] = med_pd["ATC4"].map(lambda x: x[:4])
-    med_pd = med_pd.drop_duplicates()
-    med_pd = med_pd.reset_index(drop=True)
-
-    return med_pd
-
-
-# medication data merge
 def Merge_on_RXCUI(med_pd, RXCUI2atc3_file):
     rxcui_atc_df = pd.read_csv(RXCUI2atc3_file)
     med_pd["RXCUI"] = med_pd["RXCUI"].astype("int64")
@@ -95,7 +66,6 @@ def Merge_on_RXCUI(med_pd, RXCUI2atc3_file):
     return med_df
 
 
-# CID -> ATC3 mapping dictionary
 def MakeDictionaryCIDtoATC3(med_pd):
     filtered_df = med_pd.dropna(subset=["CID", "ATC3"]).drop_duplicates(subset=["CID"])
     cid_to_atc3 = dict(zip(filtered_df["CID"], filtered_df["ATC3"]))
@@ -106,7 +76,6 @@ def MakeDictionaryCIDtoATC3(med_pd):
     return cid_to_atc3
 
 
-# visit >= 2
 def process_visit_lg2(med_pd):
     a = (
         med_pd[["SUBJECT_ID", "HADM_ID"]]
@@ -118,8 +87,6 @@ def process_visit_lg2(med_pd):
     a = a[a["HADM_ID_Len"] > 1]
     return a
 
-
-# most common medications
 def filter_300_most_med(med_pd):
     med_count = (
         med_pd.groupby(by=["CID"])
@@ -133,8 +100,6 @@ def filter_300_most_med(med_pd):
 
     return med_pd.reset_index(drop=True)
 
-
-##### process diagnosis #####
 def diag_process(diag_file):
     diag_pd = pd.read_csv(diag_file)
     diag_pd.dropna(inplace=True)
@@ -161,7 +126,6 @@ def diag_process(diag_file):
     return diag_pd
 
 
-##### process procedure #####
 def procedure_process(procedure_file):
     pro_pd = pd.read_csv(procedure_file, dtype={"ICD9_CODE": "category"})
     pro_pd.drop(columns=["ROW_ID"], inplace=True)
@@ -290,8 +254,6 @@ def statistics(data):
     print("#max of procedures ", max_pro)
     print("#max of visit ", max_visit)
 
-
-#### make final record ####
 class Voc(object):
     def __init__(self):
         self.idx2word = {}
@@ -304,7 +266,6 @@ class Voc(object):
                 self.word2idx[word] = len(self.word2idx)
 
 
-# create voc set
 def create_str_token_mapping(df):
     diag_voc = Voc()
     med_voc = Voc() 
@@ -327,8 +288,6 @@ def create_str_token_mapping(df):
     
     return diag_voc, med_voc, pro_voc
 
-
-# create final records
 def create_patient_record(df, diag_voc, med_voc, pro_voc):
     records = []  
     all_p = {} 
@@ -502,11 +461,8 @@ if __name__ == "__main__":
     med_file = "/data/MMM.u2/mcwon/SafeDrug/SafeDrug Data/predata/PRESCRIPTIONS.csv"
     diag_file = "/data/MMM.u2/mcwon/SafeDrug/SafeDrug Data/DIAGNOSES_ICD.csv"
     procedure_file = "/data/MMM.u2/mcwon/SafeDrug/SafeDrug Data/PROCEDURES_ICD.csv"
-    RXCUI2atc4_file = "/data/MMM.u2/mcwon/SafeDrug/data/input/RXCUI2atc4.csv"
     ndc2RXCUI_file = "/data/MMM.u2/mcwon/SafeDrug/data/input/ndc2RXCUI.txt"
     ddi_file = "/data/MMM.u2/mcwon/SafeDrug/data/input/drug-DDI.csv"
-    drugbankinfo = "/data/MMM.u2/mcwon/SafeDrug/data/input/drugbank_drugs_info.csv"
-    NDC_CID_SMILES_file = "/data/MMM.u2/mcwon/SafeDrug/data/input/ndc2cid_smiles.csv"
     NDC_RXCUI_CID_SMILES_file = "/data/MMM.u2/mcwon/SafeDrug/data/input/ndc2rxcui2inn2cid2smiles.csv"
     RXCUI2atc3_file = "/data/MMM.u2/mcwon/SafeDrug/data/input/RXCUI2atc3.csv"
     # output files
@@ -518,17 +474,13 @@ if __name__ == "__main__":
     ddi_table_csv = "/data/MMM.u2/mcwon/SafeDrug/data/output/ddi_detailed_table.csv"
     cid2smiles_file = "/data/MMM.u2/mcwon/SafeDrug/data/output/cidtoSMILES.pkl"
 
-    # for med
     med_pd = med_process(med_file)
     med_pd_lg2 = process_visit_lg2(med_pd).reset_index(drop=True)
     med_pd = med_pd.merge(
         med_pd_lg2[["SUBJECT_ID"]], on="SUBJECT_ID", how="inner"
     ).reset_index(drop=True)
     
-    #med processing
     med_pd = NDCtoCID_Mapping(med_pd, NDC_RXCUI_CID_SMILES_file)
-
-    # Merge: NDC_RXCUI_CID_SMILES_file - RXCUI2atc3_file
     med_pd = Merge_on_RXCUI(med_pd, RXCUI2atc3_file)
     med_pd = med_pd.dropna(subset=['ATC3'])
     
@@ -591,11 +543,9 @@ if __name__ == "__main__":
     statistics(data)
     print("complete combining")
 
-    # create vocab
     diag_voc, med_voc, pro_voc = create_str_token_mapping(data)
     print("obtain voc")
 
-    # create ehr sequence data
     records = create_patient_record(data, diag_voc, med_voc, pro_voc)
     print("obtain ehr sequence data")
 
@@ -607,7 +557,6 @@ if __name__ == "__main__":
 
     pos_ratio_all = compute_medication_imbalance(records, med_voc,
                                 failed_cids_path="/data/MMM.u2/mcwon/SafeDrug/data/input/failed_cids_final.csv")
-    # get ddi_mask_H
     ddi_mask_H = get_ddi_mask(cid_to_smiles, med_voc)
     dill.dump(ddi_mask_H, open(ddi_mask_H_file, "wb"))
 
