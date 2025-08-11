@@ -53,7 +53,7 @@ pip install torch==2.3.0+cu118 torchvision==0.18.0+cu118 torchaudio --extra-inde
 ### Dataset and Hyperparameter Configuration
 Data paths and hyperparameters (such as learning rate, target_ddi, etc.) are configured in the main.py file. Dataset paths should be set in the code to correctly correspond to the input and output folders. Running the preprocessing script processing.py automatically generates related files within the output folder. The paths in the code must then be updated accordingly to reflect the locations of these generated files.
 
-- Dataset Configuration 
+**Dataset Configuration** 
 
 In main.py the paths for the following variables must be updated to correspond to the .pkl files generated within the output folder:
 ```
@@ -91,7 +91,7 @@ hyperparameters = {
 }
 ```
 
-- Run the Code
+**Run the Code**
 
 <Train>
 
