@@ -22,22 +22,26 @@ We provide the network architecture of the proposed MMM model, along with the pi
 
 ### Package Install
 To further train the model, you need to install RDKit-related tools and several packages. To avoid version conflicts among these packages, please follow the installation steps in the exact order below.
-1) First, create and activate a new conda environment.
+
+- First, create and activate a new conda environment.
 ```
 conda create -c conda-forge -n new_env python=3.9
 ```
 ```
 conda activate new_env
 ```
-2) Install RDKit
+
+- Install RDKit
 ```
 conda install -c conda-forge rdkit
 ```
-3) If RDKit does not work after the above installation, try:
+
+- If RDKit does not work after the above installation, try:
 ```
 pip install rdkit-pypi
 ```
-4) Install numpy, pandas, and scipy with specific versions to avoid conflicts:
+
+- Install numpy, pandas, and scipy with specific versions to avoid conflicts:
 ```
 pip install numpy==1.22.4
 ```
@@ -47,7 +51,8 @@ pip install pandas==1.3.0
 ```
 pip install numpy==1.13.1
 ```
-5) Install PyTorch (torch) and torchvision using pip:
+
+- Install PyTorch (torch) and torchvision using pip:
 ```
 pip install torch torchvision
 ```
