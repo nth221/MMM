@@ -359,25 +359,19 @@ def multi_label_metric(y_gt, y_pred, y_prob):
             precision += TP / len(sort_index[i])
         return precision / len(y_gt)
     
-    # roc_auc
     try:
         auroc = roc_auc(y_gt, y_prob)
     except:
         auroc = 0
-    # precision
+
     p_1 = precision_at_k(y_gt, y_prob, k=1)
     p_3 = precision_at_k(y_gt, y_prob, k=3)
     p_5 = precision_at_k(y_gt, y_prob, k=5)
-    
-    
-    # macro f1
+
     f1 = f1(y_gt, y_pred)
-    # precision
     prauc = precision_auc(y_gt, y_prob)
-    
-    # jaccard
+
     ja = jaccard(y_gt, y_pred)
-    # pre, recall, f1
     avg_prc = average_prc(y_gt, y_pred)
     avg_recall = average_recall(y_gt, y_pred)
     avg_f1 = average_f1(avg_prc, avg_recall)
@@ -385,9 +379,7 @@ def multi_label_metric(y_gt, y_pred, y_prob):
     return ja, prauc, np.mean(avg_prc), np.mean(avg_recall), np.mean(avg_f1), auroc
 
 
-# Original code (ATC level)
 def ddi_rate_score(record, path="../data/output/ddi_A_final.pkl"):
-    # ddi rate
     ddi_A = dill.load(open(path, "rb"))
     all_cnt = 0
     dd_cnt = 0

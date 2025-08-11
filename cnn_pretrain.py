@@ -1,8 +1,3 @@
-'''
-cnn_pretrain.py
-ELF map -> pre-train model을 통해서 freeze embedding을 뽑기 위함.
-CNN 사전 학습 모델을 이용해서 이미지 임베딩을 뽑는 코드.
-'''
 import os
 import torch
 import torch.nn as nn
@@ -11,14 +6,12 @@ import torchvision.models as models
 import torchvision.transforms as transforms
 from torchvision.transforms import InterpolationMode
 from PIL import Image
-import numpy as np
 import pickle
 import dill
 
 # pretrained model name
 model_name = 'efficientnet_v2_l'
 
-# pooling: "max" or "mean"
 pooling = 'max'
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
@@ -71,7 +64,7 @@ def load_model(model_name, pretrained=True):
     }
     
     if model_name not in model_dict:
-        raise ValueError(f"지원되지 않는 모델입니다: {model_name}. 사용 가능한 모델: {list(model_dict.keys())}")
+        raise ValueError(f"model X: {model_name}. model: {list(model_dict.keys())}")
     
     if pretrained:
         if "resnet" in model_name:
@@ -171,12 +164,11 @@ def process_molecule_folder(root_folder, model_name):
 
     med_voc = voc_data['med_voc']
 
-    print(f"총 med_voc 약물 수: {len(med_voc.word2idx)}")
+    print(f"Total med_voc - medication count: {len(med_voc.word2idx)}")
 
     molecule_fol = sorted(os.listdir(root_folder))
     molecule_folders = sort_molecules_by_med_voc(molecule_fol, med_voc)
 
-    print(f"폴더에서 찾은 유효한 약물 폴더 수: {len(molecule_folders)}")
 
     found_set = set()
     missing_image_dirs = []
@@ -184,18 +176,18 @@ def process_molecule_folder(root_folder, model_name):
     for molecule in molecule_folders:
         molecule_path = os.path.join(root_folder, molecule)
         if not os.path.isdir(molecule_path):
-            print(f"{molecule_path}는 폴더가 아님. 건너뜀.")
+            print(f"{molecule_path} is not folder. skipping..")
             continue
 
         molecule_name = molecule.replace('_crop', '')
 
         if molecule_name not in med_voc.word2idx:
-            print(f"[경고] {molecule_name} not found in med_voc. Skipping.")
+            print(f"[Warning] {molecule_name} not found in med_voc. Skipping.")
             continue
 
         image_files = [f for f in os.listdir(molecule_path) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
         if len(image_files) == 0:
-            print(f"[주의] {molecule_name} 폴더에 이미지 없음. Skipping.")
+            print(f"{molecule_name} is not image in folder. Skipping.")
             missing_image_dirs.append(molecule_name)
             continue
         print(f"Processing: {molecule_name} ({len(image_files)} slices)")
@@ -205,12 +197,9 @@ def process_molecule_folder(root_folder, model_name):
         print(f"{molecule_name} Embedding Extracted ({feature_dim}D)")
     all_med_cids = set(med_voc.word2idx.keys())
     missing_cids = all_med_cids - found_set
-    print("\n--- 요약 ---")
-    print(f"총 med_voc 개수: {len(all_med_cids)}")
-    print(f"임베딩 생성된 약물 수: {len(found_set)}")
-    print(f"이미지가 없어 누락된 약물 수: {len(missing_image_dirs)}")
-    print(f"누락된 약물 목록 (med_voc 기준 존재하지만 임베딩 안됨): {missing_cids}")
-    print(f"실제로 저장된 임베딩 개수: {len(molecule_embeddings_list)}")
+    print("\n--- Summary ---")
+    print(f"Total med_voc count: {len(all_med_cids)}")
+    print(f"Embedding count: {len(molecule_embeddings_list)}")
 
     return molecule_embeddings_list
 
@@ -229,9 +218,6 @@ def apply_reduction(embeddings_list, reducer):
 
 
 def select_model_output_dim(model_name):
-    """
-    지정한 모델 이름에 따른 출력 차원(feature_dim)을 반환합니다.
-    """
     model_output_dims = {
         
         'resnet18': 512,
@@ -256,7 +242,7 @@ def select_model_output_dim(model_name):
     }
 
     if model_name not in model_output_dims:
-        raise ValueError(f"지원되지 않는 모델입니다: {model_name}. 지원 가능한 모델: {list(model_output_dims.keys())}")
+        raise ValueError(f"Model X: {model_name}. Model: {list(model_output_dims.keys())}")
     
     return model_output_dims[model_name]
 

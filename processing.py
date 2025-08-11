@@ -239,9 +239,9 @@ def statistics(data):
     unique_med = set([j for i in med for j in list(i)])
     unique_pro = set([j for i in pro for j in list(i)])
 
-    print("#diagnosis(진단개수)", len(unique_diag))
-    print("#med(약물개수) ", len(unique_med))
-    print("#procedure(수술개수)", len(unique_pro))
+    print("#diagnosis", len(unique_diag))
+    print("#med", len(unique_med))
+    print("#procedure", len(unique_pro))
 
     (
         avg_diag,
@@ -346,12 +346,6 @@ def create_patient_record(df, diag_voc, med_voc, pro_voc):
         records.append(patient)
         all_p[subject_id] = patient
 
-        if idx < debug_limit:
-            print(f"debugging - SUBJECT_ID: {subject_id}")
-            print(all_p[subject_id])
-        elif idx == debug_limit:
-            print(f"... 생략 중 (앞 {debug_limit}명까지만 출력) ...")
-
     dill.dump(obj=records, file=open(ehr_sequence_file, "wb"))
     
     return records
@@ -363,7 +357,7 @@ def get_ddi_mask(cid_to_smiles, med_voc):
     fraction = []
     success_count = 0
     
-    for idx, cid in tqdm(med_voc.idx2word.items(), desc="BRICS fragment 생성 중", mininterval=0.1, dynamic_ncols=True):
+    for idx, cid in tqdm(med_voc.idx2word.items(), desc="BRICS fragment making", mininterval=0.1, dynamic_ncols=True):
         tempF = set()
         smi = cid_to_smiles.get(str(cid), None)
 
@@ -375,17 +369,16 @@ def get_ddi_mask(cid_to_smiles, med_voc):
                     tempF.update(frags)
                     success_count += 1
         except Exception as e:
-            tqdm.write(f"BRICS 실패 (CID {cid}) → {e}")
+            tqdm.write(f"BRICS fail (CID {cid}) → {e}")
 
         fraction.append(tempF)
 
-    print(f"SMILES 성공적으로 처리된 CID 수: {success_count}/{total_cids}")
 
     fracSet = list(set().union(*fraction))
     frac_index_map = {frac: idx for idx, frac in enumerate(fracSet)}
 
     ddi_mask = np.zeros((len(med_voc.idx2word), len(fracSet)))
-    for i, fragList in tqdm(enumerate(fraction), total=len(fraction), desc="DDI mask 행렬 생성 중", mininterval=0.1, dynamic_ncols=True):
+    for i, fragList in tqdm(enumerate(fraction), total=len(fraction), desc="DDI mask matrix making", mininterval=0.1, dynamic_ncols=True):
         for frag in fragList:
             j = frac_index_map.get(frag)
             if j is not None:
@@ -403,7 +396,7 @@ def get_ddi_matrix(med_voc, ddi_table_csv):
     matched_pairs = 0
     skipped_pairs = 0
 
-    for _, row in tqdm(ddi_df.iterrows(), total=len(ddi_df), desc="DDI 행렬 생성 중"):
+    for _, row in tqdm(ddi_df.iterrows(), total=len(ddi_df), desc="DDI matrix making"):
         cid1 = row["STITCH 1"]
         cid2 = row["STITCH 2"]
         count = row["SideEffectCount"]
@@ -417,8 +410,8 @@ def get_ddi_matrix(med_voc, ddi_table_csv):
         else:
             skipped_pairs += 1
 
-    print(f"DDI 쌍: {matched_pairs}")
-    print(f"DDI 아닌 쌍: {skipped_pairs}")
+    print(f"DDI pair: {matched_pairs}")
+    print(f"DDI not pair: {skipped_pairs}")
 
     return ddi_adj, ddi_severity_adj
 
@@ -428,26 +421,16 @@ def make_cid2smiles_csv(vocabulary_file, med_pd, output_csv_path):
     with open(vocabulary_file, "rb") as f:
         vocabs = dill.load(f)
 
-    if "med_voc" not in vocabs:
-        raise ValueError("vocabulary 파일에 'med_voc'가 없습니다.")
-
     med_voc = vocabs["med_voc"]
 
     if hasattr(med_voc, "idx2word"):
         unique_cids = set(med_voc.idx2word.values())
-    else:
-        raise ValueError("med_voc에 idx2word 속성이 없습니다.")
 
-    print(f"med_voc에서 추출한 CID 개수: {len(unique_cids)}")
 
     cid_smiles_df = med_pd[["CID", "SMILES"]].drop_duplicates()
     cid_smiles_df = cid_smiles_df[cid_smiles_df["CID"].isin(unique_cids)]
     cid_smiles_df = cid_smiles_df.dropna()
-
-    print(f"SMILES가 매핑된 CID 개수: {len(cid_smiles_df)}")
-
     cid_smiles_df.to_csv(output_csv_path, index=False)
-    print(f"CID-SMILES CSV 저장 완료: {output_csv_path}")
 
 
 
@@ -480,16 +463,13 @@ def compute_medication_imbalance(records, med_voc,
     top_10_percent = df_sorted.head(top_10_percent_cutoff)
     bottom_10_percent = df_sorted.tail(top_10_percent_cutoff)
 
-    print(f"총 방문 수: {total_visits}")
-    print(f"총 약물 개수: {len(med_voc.idx2word)}")
-    print("\n[상위 10% 약물]")
+    print(f"Total visit count: {total_visits}")
+    print(f"Total medication count: {len(med_voc.idx2word)}")
+    print("\n[Top 10% med]")
     print(top_10_percent)
 
-    print("\n[하위 10% 약물]")
+    print("\n[Low 10% med]")
     print(bottom_10_percent)
-
-    print("\n양성 비율이 1% 미만인 약물 수:", (df_sorted['count_Ratio'] < 0.01).sum())
-    print("양성 비율이 50% 이상인 약물 수:", (df_sorted['count_Ratio'] > 0.5).sum())
 
     try:
         failed_cids_df = pd.read_csv(failed_cids_path)
@@ -498,11 +478,11 @@ def compute_medication_imbalance(records, med_voc,
         df_sorted['CID'] = df_sorted['CID'].astype(str)
         failed_info = df_sorted[df_sorted['CID'].isin(failed_cids)]
 
-        print(f"\n[실패한 CID {len(failed_cids)}개 중, 데이터프레임에 존재하는 수: {len(failed_info)}개]")
+        print(f"\n[failed CID {len(failed_cids)}, existed dataframe: {len(failed_info)}개]")
         print(failed_info[['CID', 'Count', 'count_Ratio', 'Percentile_Rank', 'Rank']])
 
     except Exception as e:
-        print(f"\n 실패한 CID 파일을 불러오는 데 문제가 발생했습니다: {e}")
+        print(f"\n Problem: loaded failed CID: {e}")
 
     return df_sorted
 
@@ -513,12 +493,7 @@ def filter_300_most_med_statistics(med_pd):
     top300_cids = top300_df["CID"].tolist()
 
     med_pd = med_pd[med_pd["CID"].isin(top300_cids)].reset_index(drop=True)
-    
-    print(f"✔ top300_cid_usage.csv 기준으로 약물 필터링 완료 ({len(top300_cids)}개)")
-    print(f"  → 필터링된 med_pd의 행 수: {len(med_pd)}")
-    
     return med_pd
-
 
 
 if __name__ == "__main__":
@@ -540,9 +515,8 @@ if __name__ == "__main__":
     ehr_sequence_file = "/data/MMM.u2/mcwon/SafeDrug/data/output/records_final.pkl"
     vocabulary_file = "/data/MMM.u2/mcwon/SafeDrug/data/output/voc_final.pkl"
     ddi_mask_H_file = "/data/MMM.u2/mcwon/SafeDrug/data/output/ddi_mask_H.pkl"
-    ddi_table_csv = "/data/MMM.u2/mcwon/SafeDrug/data/output/ddi_detailed_table.csv" # make ddi table 
+    ddi_table_csv = "/data/MMM.u2/mcwon/SafeDrug/data/output/ddi_detailed_table.csv"
     cid2smiles_file = "/data/MMM.u2/mcwon/SafeDrug/data/output/cidtoSMILES.pkl"
-
 
     # for med
     med_pd = med_process(med_file)
@@ -554,20 +528,19 @@ if __name__ == "__main__":
     #med processing
     med_pd = NDCtoCID_Mapping(med_pd, NDC_RXCUI_CID_SMILES_file)
 
-
     # Merge: NDC_RXCUI_CID_SMILES_file - RXCUI2atc3_file
     med_pd = Merge_on_RXCUI(med_pd, RXCUI2atc3_file)
     med_pd = med_pd.dropna(subset=['ATC3'])
     
     excepted_CIDs = {
-        "CID005311498",   # gbw missing
-        "CID000061739",   # 상처 소독제
-        "CID000003821",   # 전신마취제
-        "CID000004943",    # 전신마취제
-        "CID005284607",     # 비타민
-        "CID000517044",     # 포타슘
-        "CID000517045",      # 소듐 
-        "CID000005510",    # 향진균제 
+        "CID005311498",  
+        "CID000061739",   
+        "CID000003821",   
+        "CID000004943",   
+        "CID005284607",    
+        "CID000517044",     
+        "CID000517045",    
+        "CID000005510", 
         "CID005288783", 
         "CID000057469",
         "CID000441244",
@@ -583,7 +556,7 @@ if __name__ == "__main__":
         "CID005311221",
         "CID000002905",
         "CID000005593",
-        "CID000004935"      # 국소 마취제 
+        "CID000004935"
         }
 
     failed_cids_file = "/data/MMM.u2/mcwon/SafeDrug/data/input/failed_cids_final.csv"
@@ -601,18 +574,14 @@ if __name__ == "__main__":
         pickle.dump(cid_to_smiles, f)
 
     cid_to_atc3 = MakeDictionaryCIDtoATC3(med_pd)
-    
     print("complete medication processing")
 
     diag_pd = diag_process(diag_file)
-
     print("complete diagnosis processing")
 
     pro_pd = procedure_process(procedure_file)
-
     print("complete procedure processing")
-
-    # combine
+    
     adm_pd = pd.read_csv("/data/MMM.u2/mcwon/SafeDrug/data/input/ADMISSIONS.csv")
     data = combine_process(med_pd, diag_pd, pro_pd, adm_pd)
     

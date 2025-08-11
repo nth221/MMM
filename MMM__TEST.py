@@ -61,8 +61,8 @@ torch.backends.cudnn.benchmark = False
 # os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 # setting
-model_name = "MMM_ELF_모델개선_RS_1"
-# 여기서 ELF 모델명 지정해주면 해당 모델의 out_dim 자동적으로 가져옴.
+model_name = "MMM_ELF__RS_1"
+
 model_name_ELF = 'efficientnet_v2_l'
 
 resume_path = "Epoch_49_TARGET_0.06_JA_0.5183_DDI_0.05854.model"
@@ -94,7 +94,6 @@ parser.add_argument("--dim", type=int, default=64, help="dimension")
 parser.add_argument("--cuda", type=int, default=1, help="which cuda")
 
 args = parser.parse_args()
-# === 로그 저장 설정 ===
 log_dir = "logs"
 os.makedirs(log_dir, exist_ok=True)
 log_filename = f"{args.model_name}_lr{args.lr}_ddi{args.target_ddi}_epoch{100}.txt"
@@ -119,7 +118,6 @@ def llprint(message):
     sys.stdout.write('\r' + message)
     sys.stdout.flush()
     
-# Softmax version
 def softmax(x):
     e_x = np.exp(x - np.max(x))
     return e_x / e_x.sum()
@@ -234,19 +232,16 @@ def eval(model, data_eval, voc_size, epoch, med_voc, ddi_adj):
 
             smm_record.append(y_pred_label)
             
-            # CID → ATC3 변환 후 multi-label metric 계산
-            # CID 인덱스 리스트 → ATC3 리스트로 변환
             y_gt_ATC3 = convert_to_ATC3_prob_dict([np.where(gt == 1)[0] for gt in y_gt], cid_vocab, cid_to_atc3)
             y_pred_ATC3 = convert_to_ATC3_prob_dict([np.where(pred == 1)[0] for pred in y_pred], cid_vocab, cid_to_atc3)
             y_prob_ATC3 = convert_to_ATC3_prob_dict(y_pred_prob, cid_vocab, cid_to_atc3)
 
             all_atc3_labels = sorted(set().union(*[set(d.keys()) for d in y_prob_ATC3]))
 
-            # 평가지표: ATC3 기준
             adm_ja_ATC3, adm_prauc_ATC3, adm_avg_p_ATC3, adm_avg_r_ATC3, adm_avg_f1_ATC3, adm_auroc_ATC3 = multi_label_metric_string(
                 y_gt_ATC3, y_pred_ATC3, y_prob_ATC3
             )
-            # 평가지표: CID 기준
+
             adm_ja_CID, adm_prauc_CID, adm_avg_p_CID, adm_avg_r_CID, adm_avg_f1_CID, adm_auroc_CID = multi_label_metric(
                 np.array(y_gt), np.array(y_pred), np.array(y_pred_prob)
             )
@@ -267,7 +262,7 @@ def eval(model, data_eval, voc_size, epoch, med_voc, ddi_adj):
     y_scores_cid_all.append(np.array(y_pred_prob))
     y_true_atc3_all.append(np.array(y_gt_ATC3))
     y_scores_atc3_all.append(np.array(y_prob_ATC3))
-    # evaluation 종료 후 metrics 평균 계산
+
     ja_cid_mean, ja_atc_mean = np.mean([x[0] for x in ja]), np.mean([x[1] for x in ja])
     prauc_cid_mean, prauc_atc_mean = np.mean([x[0] for x in prauc]), np.mean([x[1] for x in prauc])
     p_cid_mean, p_atc_mean = np.mean([x[0] for x in avg_p]), np.mean([x[1] for x in avg_p])
@@ -316,7 +311,6 @@ def main():
     voc = dill.load(open(voc_path, "rb"))
     diag_voc, pro_voc, med_voc = voc["diag_voc"], voc["pro_voc"], voc["med_voc"]
 
-    # CID-level DDI Ground Truth
     evaluate_ground_truth_ddi_rate(data, ddi_adj)
     evaluate_ground_truth_ddi_rate_per_admission(data, ddi_adj)
     
@@ -326,13 +320,7 @@ def main():
     data_test = data[split_point : split_point + eval_len]
     data_eval = data[split_point + eval_len :]
 
-    print("Whole data 개수: ", len(data))
-    print("Train data 개수: ", len(data_train))
-    print("Validation data 개수: ", len(data_eval))
-    print("Test data 개수: ", len(data_test))
-
     elf_dim = select_model_output_dim(model_name_ELF)
-    print(f"{model_name_ELF}의 출력 차원은 {elf_dim}입니다.")
     
     voc_size = (len(diag_voc.idx2word), len(pro_voc.idx2word), len(med_voc.idx2word))
     model = MMM(
@@ -352,7 +340,7 @@ def main():
 
         result = []
 
-        for _ in range(10):  # Bootstrap sampling
+        for _ in range(10):
             test_sample = np.random.choice(data_test, round(len(data_test) * 0.8), replace=True)
             
             ddi, ja_c, pr_c, p_c, r_c, f1_c, roc_c, ja_a, pr_a, p_a, r_a, f1_a, roc_a, avg_med, val_loss = eval(

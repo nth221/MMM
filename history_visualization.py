@@ -1,8 +1,3 @@
-'''
-model에 저장된 history를 기반으로 plot 생성하기
-Plot visualization
-'''
-
 import dill
 import matplotlib.pyplot as plt
 import os
