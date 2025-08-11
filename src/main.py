@@ -9,9 +9,9 @@ from torch.optim import Adam
 import os
 import torch
 import time
-from MMM import MMM
-from cnn_pretrain import select_model_output_dim
-from util import evaluate_ground_truth_ddi_rate, evaluate_ground_truth_ddi_rate_per_admission, llprint, multi_label_metric, multi_label_metric_string, ddi_rate_score, get_n_params, buildMPNN, plot_pr_curve
+from MMM.src import MMM
+from MMM.src.cnn_pretrain import select_model_output_dim
+from MMM.src.util import evaluate_ground_truth_ddi_rate, evaluate_ground_truth_ddi_rate_per_admission, llprint, multi_label_metric, multi_label_metric_string, ddi_rate_score, get_n_params, buildMPNN, plot_pr_curve
 import torch.nn.functional as F
 import sys
 import pickle
