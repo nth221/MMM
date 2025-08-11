@@ -1,4 +1,4 @@
-<img width="930" height="320" alt="MMM_logo" src="https://github.com/user-attachments/assets/b70d9ffc-5191-46a6-b073-d130d305a42e" />
+![IMG_6840](https://github.com/user-attachments/assets/701076cf-4f21-4c50-b956-178a8407217a)
 
 
 # MMM: Quantum-Chemical Molecular Representation Learning for Combinatorial Drug Recommendation
