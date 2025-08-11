@@ -90,19 +90,7 @@ hyperparameters = {
     "cuda": [cuda_device_index]
 }
 ```
-- Setting the Experimental Results Path
 
-Before running the experiment, it is necessary to configure the paths for saving experimental results and model checkpoints. In the training script, the model checkpoints and training history are saved under the directory structure:
-```
-saved/{model_name}/
-```
-where {model_name} is specified via the command-line argument --model_name.
-
-Model checkpoints are saved during training with filenames formatted as:
-```
-Epoch_{epoch_number}_TARGET_{target_ddi}_JA-ATC3_{jaccard_atc3}_JA-CID_{jaccard_cid}_DDI_{ddi_rate}.model
-saved/{model_name}/history_{model_name}.pkl
-```
 - Run the Code
 
 <Train>
