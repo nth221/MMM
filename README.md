@@ -1,4 +1,4 @@
-![IMG_6840](https://github.com/user-attachments/assets/701076cf-4f21-4c50-b956-178a8407217a)
+^ㅍ^ㅍ![IMG_6840](https://github.com/user-attachments/assets/701076cf-4f21-4c50-b956-178a8407217a)
 
 
 # MMM: Quantum-Chemical Molecular Representation Learning for Combinatorial Drug Recommendation
@@ -51,7 +51,7 @@ pip install torch==2.3.0+cu118 torchvision==0.18.0+cu118 torchaudio --extra-inde
 ```
 
 ### Dataset and Hyperparameter Configuration
-Data paths and hyperparameters (such as learning rate, target_ddi, etc.) are configured in the MMM_TEST.py (or MMM_RS.py) file. Dataset paths should be set in the code to correctly correspond to the input and output folders. Running the preprocessing script processing.py automatically generates related files within the output folder. The paths in the code must then be updated accordingly to reflect the locations of these generated files.
+Data paths and hyperparameters (such as learning rate, target_ddi, etc.) are configured in the main.py file. Dataset paths should be set in the code to correctly correspond to the input and output folders. Running the preprocessing script processing.py automatically generates related files within the output folder. The paths in the code must then be updated accordingly to reflect the locations of these generated files.
 
 - Dataset Configuration 
 
