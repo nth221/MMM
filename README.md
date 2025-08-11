@@ -26,8 +26,6 @@ To further train the model, you need to install RDKit-related tools and several 
 - First, create and activate a new conda environment.
 ```
 conda create -c conda-forge -n new_env python=3.9
-```
-```
 conda activate new_env
 ```
 

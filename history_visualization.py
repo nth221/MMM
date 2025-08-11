@@ -2,10 +2,10 @@ import dill
 import matplotlib.pyplot as plt
 import os
 
-save_dir = "/data/MMM.u2/mcwon/SafeDrug/src/plot"
+save_dir = "/data/MMM.u2/mcwon/src/plot"
 os.makedirs(save_dir, exist_ok=True)
 
-with open("/data/MMM.u2/mcwon/SafeDrug/saved/MMM2____mmm/history____mmm.pkl", "rb") as f:
+with open("/data/MMM.u2/mcwon/saved/MMM2____mmm/history____mmm.pkl", "rb") as f:
     history = dill.load(f)
 
 epochs = range(1, len(history["adm_ja_CID"]) + 1)
