@@ -2,7 +2,7 @@
 
 
 # MMM: Quantum-Chemical Molecular Representation Learning for Combinatorial Drug Recommendation
-## This repository contains the official implementation of **"MMM: Quantum-Chemical Molecular Representation Learning for Combinatorial Drug Recommendation"**.
+## This repository contains the official implementation of "MMM: Quantum-Chemical Molecular Representation Learning for Combinatorial Drug Recommendation".
 
 
 ## Paper Overview
