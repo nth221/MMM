@@ -1,3 +1,6 @@
+
+<img width="932" height="323" alt="MMM_logo" src="https://github.com/user-attachments/assets/e3ca4605-54b9-418b-b07f-fcb98f214ddf" />
+
 # MMM: Quantum-Chemical Molecular Representation Learning for Combinatorial Drug Recommendation
 ## This repository contains the official implementation of **"MMM: Quantum-Chemical Molecular Representation Learning for Combinatorial Drug Recommendation"**.
 
