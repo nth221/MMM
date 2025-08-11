@@ -1,4 +1,4 @@
-^ㅍ^ㅍ![IMG_6840](https://github.com/user-attachments/assets/701076cf-4f21-4c50-b956-178a8407217a)
+![IMG_6840](https://github.com/user-attachments/assets/701076cf-4f21-4c50-b956-178a8407217a)
 
 
 # MMM: Quantum-Chemical Molecular Representation Learning for Combinatorial Drug Recommendation
