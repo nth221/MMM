@@ -120,3 +120,15 @@ year={2025},
 organization={Springer}
 }
 ```
+
+## References
+```
+@inproceedings{yang2021safedrug,
+    title = {SafeDrug: Dual Molecular Graph Encoders for Safe Drug Recommendations},
+    author = {Yang, Chaoqi and Xiao, Cao and Ma, Fenglong and Glass, Lucas and Sun, Jimeng},
+    booktitle = {Proceedings of the Thirtieth International Joint Conference on
+               Artificial Intelligence, {IJCAI} 2021},
+    year = {2021}
+}
+```
+
