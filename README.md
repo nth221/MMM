@@ -11,10 +11,10 @@ This repository contains the official implementation of **"MMM: Quantum-Chemical
 
 **Highlights**
 
-- **Multimodal Fusion**: Integration of ELF-based molecular image embeddings with sequential patient EHR embeddings 
-- **DDI-aware Learning**: Incorporation of drug–drug interaction (DDI) adjacency and rules into the training loss and attention mechanisms  
-- **Combinatorial Recommendation**: Multi-label prediction of drug combinations with continuous monitoring of DDI risk
-- **Optional Explainability**: Grad-CAM-style visualization applied to ELF maps for interpreting molecular feature contributions
+- **Multimodal Fusion**: Integrating ELF-based molecular image embeddings with sequential patient EHR representations 
+- **DDI-aware Learning**: Incorporating drug–drug interaction (DDI) adjacency matrices and rule-based constraints into the training loss and attention mechanisms
+- **Combinatorial Recommendation**: Predicting multi-label drug combinations while continuously monitoring DDI risk
+- **Optional Explainability**: Applying Grad-CAM-style visualization to ELF maps to interpret molecular feature contributions
 
 
 ## Experimental Setup
@@ -107,7 +107,7 @@ python main.py
 python main.py --Test --resume_path [best_epoch_path]
 ```
 
-### Citation
+## Citation
 If you find this code useful for your work, please cite the following and consider starring this repository:
 
 ```
