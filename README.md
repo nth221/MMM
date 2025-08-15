@@ -132,3 +132,15 @@ organization={Springer}
 }
 ```
 
+```
+@article{kim2025pubchem,
+    title={PubChem 2025 update},
+    author={Kim, Sunghwan and Chen, Jie and Cheng, Tiejun and Gindulyte, Asta and He, Jie and He, Suyun and Li, Qingliang and Shoemaker, Bradford A. and Thiessen, Paul A. and Yu, Bo and Zaslavsky, Leonid and Zhang, Jian and Bolton, Evan E.},
+    journal={Nucleic Acids Research},
+    volume={53},
+    number={D1},
+    pages={D1516--D1525},
+    year={2025},
+    doi={10.1093/nar/gkae1059}
+}
+```
